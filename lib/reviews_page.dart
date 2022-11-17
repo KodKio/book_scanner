@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:book_scanner/add_review_page.dart';
 import 'package:book_scanner/structures.dart';
 import 'package:book_scanner/main.dart';
-import 'package:book_scanner/add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_scanner/database.dart';
@@ -45,14 +42,25 @@ class _ReviewsPageState extends State<ReviewsPage> {
   Future<void> _initAsync() async {
     await _initBarcode();
     await _initBook();
+    await _checkAge();
     await _initReviews();
+  }
+
+  Future<void> _checkAge() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final age = prefs.getInt(ageKey);
+    if (_logined) {
+      if (age! < _book.age_limit) {
+        Navigator.of(context).pop();
+        _showReview("Извините", "Вы ещё маленький для таких книжек:(");
+      }
+    }
   }
 
   Future<void> _initBarcode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final barcode = prefs.getInt(barcodeKey);
     final logined = prefs.getBool(loginedKey);
-    final login = prefs.getString(loginKey);
     setState(() {
       _barcode = barcode!;
       if (logined != null) {
@@ -68,7 +76,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
         _barcode,
         data[0]["books_info"]!["name"],
         data[0]["books_info"]!["author"],
-        0
+        data[0]["books_info"]!["age_limit"]
     );
     setState(() {
       _book = book;
@@ -79,13 +87,13 @@ class _ReviewsPageState extends State<ReviewsPage> {
     List<Map<String, Map<String, dynamic>>> data = await db.fetchReviewsData(
         _barcode);
     List<MyReview> reviews = [];
-    String review = "";
     for (var elem in data) {
       reviews.add(MyReview(
-          MyBook(0, "", "", 0),
+          _book,
           MyUser(
               elem["books_accounts"]!["login"],
-              elem["books_accounts"]!["name"]
+              elem["books_accounts"]!["name"],
+              0
           ),
           elem["books_reviews"]!["review"]
       )
@@ -167,7 +175,6 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    String name = _book.name;
     return Scaffold(
         appBar: AppBar(
           title: Text("Отзывы"),

@@ -1,20 +1,18 @@
-import 'package:flutter/material.dart';
-
 class MyBook {
   final int barcode;
   final String name;
   final String author;
-  final int age;
+  final int age_limit;
 
-  MyBook(this.barcode, this.name, this.author, this.age);
+  MyBook(this.barcode, this.name, this.author, this.age_limit);
 }
 
 class MyUser {
   final String name;
   final String login;
-  String? email;
+  final int age;
 
-  MyUser(this.login, this.name);
+  MyUser(this.login, this.name, this.age);
 }
 
 class MyReview {

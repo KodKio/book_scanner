@@ -3,7 +3,7 @@ import 'package:book_scanner/database.dart';
 import 'package:book_scanner/login_page.dart';
 import 'package:book_scanner/my_reviews_page.dart';
 import 'package:book_scanner/reviews_page.dart';
-import 'package:book_scanner/add_page.dart';
+import 'package:book_scanner/add_book_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scan/scan.dart';
@@ -14,6 +14,7 @@ const String loginKey = "LOGIN";
 const String passwordKey = "PASSWORD";
 const String usernameKey = "USERNAME";
 const String loginedKey = "LOGINED";
+const String ageKey = "AGE";
 
 void main() {
   _prepareAndRun();
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(),
       routes: {
-        AddPage.routeName : (BuildContext context) => const AddPage(),
+        AddBookPage.routeName : (BuildContext context) => const AddBookPage(),
         LoginPage.routeName : (BuildContext context) => LoginPage(),
         ReviewsPage.routeName : (BuildContext context) => const ReviewsPage(),
         MyHomePage.routeName : (BuildContext context) => const MyHomePage(),
@@ -119,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _goToAdd() async {
     Navigator.of(context).pop();
-    Navigator.of(context).pushNamed(AddPage.routeName);
+    Navigator.of(context).pushNamed(AddBookPage.routeName);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt(barcodeKey, int.parse(_textController.text));
   }

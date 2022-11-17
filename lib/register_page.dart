@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:book_scanner/main.dart';
 import 'package:book_scanner/database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -17,7 +15,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController secondPasswordController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
   AppDatabase db = AppDatabase();
 
   Future<void> _registerUser() async {
@@ -25,7 +25,8 @@ class _RegisterPageState extends State<RegisterPage> {
       String login = loginController.text;
       String password = passwordController.text;
       String username = usernameController.text;
-      String user = await db.registerUser(username, login, password);
+      int age = int.parse(ageController.text);
+      String user = await db.registerUser(username, login, password, age);
       if (user != "reg") {
         await _showDialogAlert("Такой пользователь уже есть, попробуйте другой логин");
         return;
@@ -182,6 +183,89 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
 
+    final secondPasswordField = Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        controller: secondPasswordController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return "Введите пароль еще раз";
+          } else if (value != passwordController.text) {
+            return 'Пароли не совпадают';
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          labelText: 'Повторите пароль',
+          hintText: "Повторите пароль",
+          prefixIcon: const Icon(Icons.password),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.delete_outline),
+            color: Colors.red,
+            onPressed: () => { secondPasswordController.clear() },
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.black, width: 2.0),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.red, width: 2.0),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide:
+            BorderSide(color: Colors.deepOrangeAccent, width: 2.0),
+          ),
+        ),
+      ),
+    );
+
+    final ageField = Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        controller: ageController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Введите возраст';
+          }
+          return null;
+        },
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: 'Возраст',
+          hintText: "Возраст",
+          prefixIcon: const Icon(Icons.date_range),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.delete_outline),
+            color: Colors.red,
+            onPressed: () => { ageController.clear() },
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.black, width: 2.0),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.blue, width: 2.0),
+          ),
+          errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide: BorderSide(color: Colors.red, width: 2.0),
+          ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            borderSide:
+            BorderSide(color: Colors.deepOrangeAccent, width: 2.0),
+          ),
+        ),
+      ),
+    );
+
     final singUpButton = ElevatedButton(
       onPressed: _registerUser,
       child: const Text("Зарегистрироваться"),
@@ -201,6 +285,8 @@ class _RegisterPageState extends State<RegisterPage> {
               usernameField,
               loginField,
               passwordField,
+              secondPasswordField,
+              ageField,
               singUpButton,
             ],
           ),

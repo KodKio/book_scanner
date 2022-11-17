@@ -1,20 +1,19 @@
 import 'package:book_scanner/database.dart';
-import 'package:book_scanner/login_page.dart';
 import 'package:book_scanner/reviews_page.dart';
 import 'package:book_scanner/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AddPage extends StatefulWidget {
-  const AddPage({super.key});
+class AddBookPage extends StatefulWidget {
+  const AddBookPage({super.key});
 
   static const routeName = '/add';
 
   @override
-  _AddPageState createState() => _AddPageState();
+  _AddBookPageState createState() => _AddBookPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _AddBookPageState extends State<AddBookPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController authorController = TextEditingController();

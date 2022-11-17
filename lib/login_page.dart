@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     final logined = prefs.getBool(loginedKey);
     setState(() {
       if (logined != null) {
-        _logined = logined!;
+        _logined = logined;
       }
     });
   }
@@ -50,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setString(usernameKey, user[0]["books_accounts"]!["name"]);
         prefs.setString(loginKey, user[0]["books_accounts"]!["login"]);
         prefs.setString(passwordKey, user[0]["books_accounts"]!["password"]);
+        prefs.setInt(ageKey, user[0]["books_accounts"]!["age"]);
         prefs.setBool(loginedKey, true);
         Navigator.of(context).pop();
       } else {

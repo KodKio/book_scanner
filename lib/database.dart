@@ -19,7 +19,7 @@ class AppDatabase {
       await connection.open();
     }
     fetchBookDataFuture = await connection.mappedResultsQuery(
-        'SELECT bi.name, bi.author FROM books_info bi WHERE barcode = @barcode',
+        'SELECT bi.name, bi.author, bi.age_limit FROM books_info bi WHERE barcode = @barcode',
         substitutionValues: {'barcode': barcode}
     );
     return fetchBookDataFuture;
@@ -86,17 +86,18 @@ class AppDatabase {
 
   String newUserFuture = '';
   Future<String> registerUser(
-      String username, String login, String password) async {
+      String username, String login, String password, int age) async {
     try {
     if (connection.isClosed) {
       await connection.open();
     }
-      PostgreSQLResult result = await connection.query(
-          'INSERT INTO books_accounts VALUES (@username, @login, @password)',
+      await connection.query(
+          'INSERT INTO books_accounts VALUES (@username, @login, @password, @age)',
           substitutionValues: {
             'username': username,
             'login': login,
-            'password': password
+            'password': password,
+            'age': age,
           }
       );
       newBookFuture = 'reg';
@@ -114,7 +115,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
-      PostgreSQLResult result = await connection.query(
+      await connection.query(
           'INSERT INTO books_reviews VALUES (@barcode, @how, @text)',
           substitutionValues: {
             'barcode': barcode,
@@ -136,7 +137,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
-      PostgreSQLResult result = await connection.query(
+      await connection.query(
           'UPDATE books_reviews SET review = @text WHERE book = @barcode AND how = @how',
           substitutionValues: {
             'barcode': barcode,
@@ -157,7 +158,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
-      PostgreSQLResult result = await connection.query(
+      await connection.query(
           'DELETE FROM books_reviews WHERE book = @barcode AND how = @how',
           substitutionValues: {
             'barcode': barcode,

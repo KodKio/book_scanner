@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:book_scanner/add_review_page.dart';
 import 'package:book_scanner/structures.dart';
 import 'package:book_scanner/main.dart';
 import 'package:book_scanner/reviews_page.dart';
@@ -59,7 +56,8 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
           ),
           MyUser(
               login,
-              ""
+              "",
+              0,
           ),
           elem["books_reviews"]!["review"]
       )
@@ -68,31 +66,6 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
     setState(() {
       _reviews = reviews;
     });
-  }
-
-  Future _showReview(String name, String text) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(name),
-            titleTextStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontSize: 20
-            ),
-            actionsOverflowButtonSpacing: 20,
-            actions: [
-              ElevatedButton(
-                  onPressed: () => Future.delayed(Duration.zero, () {
-                    Navigator.of(context).pop(); }),
-                  child: const Text("Понятно")
-              )
-            ],
-            content: Text(text),
-          );
-        }
-    );
   }
 
   @override
