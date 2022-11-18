@@ -256,6 +256,79 @@ class _LoginPageState extends State<LoginPage> {
       child: const Text("Мои отзывы"),
     );
 
+    final loginInfo = Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.lightBlue,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          child: Text(
+            "Логин: $_login",
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold
+            ),
+          )
+      ),
+    );
+
+    final usernameInfo = Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.lightBlue,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          child: Text(
+            "Имя: $_username",
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold
+            ),
+          )
+      ),
+    );
+
+    final ageInfo = Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.lightBlue,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        child: Text(
+          "Возраст: $_age",
+          style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+          ),
+        )
+      )
+    );
+
+    final profileCard = Container(
+      height: 190,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Center(
+        child: ListView(
+          padding: const EdgeInsets.all(10.0),
+          children: <Widget>[
+            loginInfo,
+            const SizedBox(height: 10),
+            usernameInfo,
+            const SizedBox(height: 10),
+            ageInfo
+          ],
+        )
+      )
+    );
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -268,6 +341,8 @@ class _LoginPageState extends State<LoginPage> {
           child: ListView(
             padding: const EdgeInsets.all(10.0),
             children: <Widget>[
+              profileCard,
+              const SizedBox(height: 20),
               myReviewsButton,
               logoutButton,
             ],
