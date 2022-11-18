@@ -226,4 +226,23 @@ class AppDatabase {
     }
     return newReviewFuture;
   }
+
+  Future<String> deleteUser(String login) async {
+    try {
+      if (connection.isClosed) {
+        await connection.open();
+      }
+      await connection.query(
+          'DELETE FROM books_accounts WHERE login = @login',
+          substitutionValues: {
+            'login': login
+          }
+      );
+      newReviewFuture = 'reg';
+    } catch (exc) {
+      newReviewFuture = 'exc';
+      exc.toString();
+    }
+    return newReviewFuture;
+  }
 }

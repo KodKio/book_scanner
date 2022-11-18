@@ -62,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         prefs.setString(usernameKey, username);
         prefs.setInt(ageKey, age);
         prefs.setString(passwordKey, password);
-        await _showDialogAlert("Ваш данные обновлёны");
+        await _showDialogAlert("Ваш данные обновлены");
         Navigator.of(context).pop();
       } else {
         _showDialogAlert("Что-то пошло не так:(");

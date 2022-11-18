@@ -69,9 +69,22 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setBool(loginedKey, true);
         Navigator.of(context).pop();
       } else {
-        _showDialogAlert();
+        _showDialogAlert("У нас нет таких:(");
       }
     }
+  }
+
+  Future<void> _deleteProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(usernameKey, "");
+    prefs.setString(loginKey, "");
+    prefs.setString(passwordKey, "");
+    prefs.setInt(ageKey, 0);
+    prefs.setBool(loginedKey, false);
+    db.deleteUser(_login);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    _showDialogAlert("Аккаунт удалён");
   }
 
   Future<void> _goToRegister() async {
@@ -82,12 +95,12 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushNamed(ForgetPage.routeName);
   }
 
-  Future _showDialogAlert() {
+  Future _showDialogAlert(String text) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("У нас нет таких:("),
+            title: Text(text),
             titleTextStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -103,6 +116,37 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text("Ок")
               ),
             ],
+          );
+        });
+  }
+
+  Future _showDeleteAlert() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Удаление аккаунта"),
+            titleTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 20
+            ),
+            actionsOverflowButtonSpacing: 20,
+            actions: [
+              ElevatedButton(
+                  onPressed: () => Future.delayed(Duration.zero, () {
+                    Navigator.of(context).pop(); }),
+                  child: const Text("Нет")
+              ),
+              ElevatedButton(
+                  onPressed: _deleteProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red
+                  ),
+                  child: const Text("Да")
+              ),
+            ],
+            content: const Text("Точно хотите удалить?"),
           );
         });
   }
@@ -251,6 +295,16 @@ class _LoginPageState extends State<LoginPage> {
     final myReviewsButton = ElevatedButton(
       onPressed: _goToMyReviews,
       child: const Text("Мои отзывы"),
+    );
+
+    final deleteButton = ElevatedButton(
+      onPressed: () => {
+        _showDeleteAlert()
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red
+      ),
+      child: const Text("Удалить аккаунт"),
     );
 
     final loginInfo = Container(
@@ -439,7 +493,8 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               profileCard,
               const SizedBox(height: 20),
-              myReviewsButton
+              myReviewsButton,
+              deleteButton
             ],
           ),
         ),
