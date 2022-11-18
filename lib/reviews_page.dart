@@ -213,31 +213,26 @@ class _ReviewsPageState extends State<ReviewsPage> {
           child: Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                        _reviews[index - 1].how.name,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                        ),
-                        textAlign: TextAlign.left
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    _reviews[index - 1].how.name,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _reviews[index - 1].text,
-                              maxLines: null,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: Colors.white)
-                            ),
-                          )
-                        ]
-                    )
-                  ]
+                    textAlign: TextAlign.left
+                  ),
+                  const SizedBox(height: 10),
+                  Flexible(
+                    child: Text(
+                      _reviews[index - 1].text,
+                      maxLines: null,
+                      style: const TextStyle(color: Colors.white)
+                    ),
+                  )
+                ]
               )
           )
         )

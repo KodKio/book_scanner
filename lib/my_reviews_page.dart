@@ -102,44 +102,39 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
   Widget _itemBuilder(BuildContext context, int index) {
     final numLines = '\n'.allMatches(_reviews[index].text).length + 1;
     return GestureDetector(
-        onTap: () => _goToReviews(_reviews[index].book.barcode),
-        child: Container(
-            decoration: BoxDecoration(
-                color: Colors.lightBlue,
-                borderRadius: BorderRadius.circular(10)
-            ),
-            height: 100 + (numLines - 2) * 10 + 30,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      Text(
-                          _reviews[index].book.name,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold
-                          ),
-                          textAlign: TextAlign.left
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                  _reviews[index].text,
-                                  maxLines: null,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(color: Colors.white)
-                              ),
-                            )
-                          ]
-                      )
-                    ]
-                )
-            )
+      onTap: () => _goToReviews(_reviews[index].book.barcode),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.lightBlue,
+            borderRadius: BorderRadius.circular(10)
+        ),
+        height: 100 + (numLines - 2) * 10 + 30,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                _reviews[index].book.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                ),
+                textAlign: TextAlign.left
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: Text(
+                  _reviews[index].text,
+                  maxLines: null,
+                  style: const TextStyle(color: Colors.white)
+                ),
+              )
+            ]
+          )
         )
+      )
     );
   }
 
