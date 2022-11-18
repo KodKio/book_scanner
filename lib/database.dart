@@ -204,4 +204,26 @@ class AppDatabase {
     }
     return newReviewFuture;
   }
+
+  Future<String> updateUser(String login, String username, String password, int age) async {
+    try {
+      if (connection.isClosed) {
+        await connection.open();
+      }
+      await connection.query(
+          'UPDATE books_accounts SET password = @password, age = @age, name = @username WHERE login = @login',
+          substitutionValues: {
+            'login': login,
+            'password': password,
+            'age': age,
+            'username': username
+          }
+      );
+      newReviewFuture = 'reg';
+    } catch (exc) {
+      newReviewFuture = 'exc';
+      exc.toString();
+    }
+    return newReviewFuture;
+  }
 }

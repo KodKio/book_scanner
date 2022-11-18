@@ -1,5 +1,6 @@
 import 'package:book_scanner/add_review_page.dart';
 import 'package:book_scanner/database.dart';
+import 'package:book_scanner/edit_profile_page.dart';
 import 'package:book_scanner/login_page.dart';
 import 'package:book_scanner/my_reviews_page.dart';
 import 'package:book_scanner/reviews_page.dart';
@@ -7,6 +8,7 @@ import 'package:book_scanner/add_book_page.dart';
 import 'package:book_scanner/register_page.dart';
 import 'package:book_scanner/forget_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scan/scan.dart';
 
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
         AddReviewPage.routeName : (BuildContext context) => const AddReviewPage(),
         MyReviewsPage.routeName : (BuildContext context) => const MyReviewsPage(),
         ForgetPage.routeName : (BuildContext context) => const ForgetPage(),
+        EditProfilePage.routeName : (BuildContext context) => const EditProfilePage()
       },
     );
   }
@@ -101,7 +104,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _goToReviews() async {
-    print("Go To Reviews");
+    if (_textController.text.length != 13) {
+      _showBadDialogAlert();
+      return;
+    }
     if (_textController.text != "") {
       List<Map<String, Map<String, dynamic>>> data =
         await db.fetchBookData(int.parse(_textController.text));
@@ -205,6 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   controller: _textController
               )
             ),
@@ -240,6 +247,30 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
     );
+  }
+
+  Future _showBadDialogAlert() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Неверный штрихкод"),
+            titleTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 20
+            ),
+            actionsOverflowButtonSpacing: 20,
+            actions: [
+              ElevatedButton(
+                  onPressed: () => Future.delayed(Duration.zero, () {
+                    Navigator.of(context).pop(); }),
+                  child: const Text("Хорошо")
+              )
+            ],
+            content: Text("Проверьте штрихкод или введите другой"),
+          );
+        });
   }
 
   Future _showDialogAlert() {

@@ -1,3 +1,4 @@
+import 'package:book_scanner/edit_profile_page.dart';
 import 'package:book_scanner/forget_page.dart';
 import 'package:book_scanner/my_reviews_page.dart';
 import 'package:book_scanner/register_page.dart';
@@ -240,16 +241,12 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushNamed(MyReviewsPage.routeName);
   }
 
-
+  Future<void> _goToEditing() async {
+    await Navigator.of(context).pushNamed(EditProfilePage.routeName);
+    _initLogin();
+  }
 
   Widget buildOutForm(BuildContext context) {
-    final logoutButton = ElevatedButton(
-      onPressed: _logout,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red
-      ),
-      child: const Text("Выйти"),
-    );
 
     final myReviewsButton = ElevatedButton(
       onPressed: _goToMyReviews,
@@ -419,6 +416,20 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Ваш Аккаунт"),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.red,
+              child: IconButton(
+                icon: const Icon(Icons.logout),
+                color: Colors.white,
+                onPressed: _logout,
+              )
+            )
+          )
+        ],
       ),
       body: Center(
         child: Form(
@@ -428,12 +439,15 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               profileCard,
               const SizedBox(height: 20),
-              myReviewsButton,
-              logoutButton,
+              myReviewsButton
             ],
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _goToEditing,
+        child: const Icon(Icons.edit),
+      )
     );
   }
 
