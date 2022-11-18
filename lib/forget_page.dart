@@ -1,38 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:book_scanner/database.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class ForgetPage extends StatefulWidget {
+  const ForgetPage({super.key});
 
-  static String routeName = '/register';
+  static String routeName = '/forget';
 
   @override
-  _RegisterPageState createState() => new _RegisterPageState();
+  _ForgetPageState createState() => new _ForgetPageState();
 
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _ForgetPageState extends State<ForgetPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController secondPasswordController = TextEditingController();
-  TextEditingController usernameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
+  bool _found = false;
   AppDatabase db = AppDatabase();
 
-  Future<void> _registerUser() async {
+  Future<void> _updatePassword() async {
     if (_formKey.currentState!.validate()) {
       String login = loginController.text;
       String password = passwordController.text;
-      String username = usernameController.text;
-      int age = int.parse(ageController.text);
-      String user = await db.registerUser(username, login, password, age);
-      if (user != "reg") {
-        await _showDialogAlert("Такой пользователь уже есть, попробуйте другой логин");
-        return;
+      String result = await db.updateUserPassword(login, password);
+      if (result == "reg") {
+        await _showDialogAlert("Ваш пароль обновлён");
+        Navigator.of(context).pop();
+      } else {
+        _showDialogAlert("Что-то пошло не так:(");
       }
-      await _showDialogAlert("Вы успешно зарегистрированны");
-      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _check() async {
+    if (_formKey.currentState!.validate()) {
+      String login = loginController.text;
+      int age = int.parse(ageController.text);
+      bool found = await db.foundUserByLoginAndAge(login, age);
+      if (found) {
+        setState(() {
+          _found = true;
+        });
+      } else {
+        _showDialogAlert("У нас нет таких:(");
+      }
     }
   }
 
@@ -63,53 +76,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final usernameField = Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        controller: usernameController,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Введите имя';
-          }
-          return null;
-        },
-        decoration: InputDecoration(
-          labelText: 'Имя',
-          prefixIcon: const Icon(Icons.person),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red,
-            onPressed: () => { usernameController.clear() },
-          ),
-          hintText: "Имя",
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            borderSide: BorderSide(color: Colors.black, width: 2.0),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            borderSide: BorderSide(color: Colors.blue, width: 2.0),
-          ),
-          errorBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            borderSide: BorderSide(color: Colors.red, width: 2.0),
-          ),
-          focusedErrorBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-            borderSide:
-            BorderSide(color: Colors.deepOrangeAccent, width: 2.0),
-          ),
-        ),
-      ),
-    );
-
     final loginField = Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
         controller: loginController,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Введите логин';
+            return 'Введите свой логин';
           }
           return null;
         },
@@ -150,13 +123,13 @@ class _RegisterPageState extends State<RegisterPage> {
         controller: passwordController,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Введите пароль';
+            return 'Введите новый пароль';
           }
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'Пароль',
-          hintText: "Пароль",
+          labelText: 'Новый пароль',
+          hintText: "Новый пароль",
           prefixIcon: const Icon(Icons.password),
           suffixIcon: IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -233,14 +206,14 @@ class _RegisterPageState extends State<RegisterPage> {
         controller: ageController,
         validator: (value) {
           if (value!.isEmpty) {
-            return 'Введите возраст';
+            return 'Введите свой возраст, который указывали при регистрации';
           }
           return null;
         },
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          labelText: 'Возраст',
-          hintText: "Возраст",
+          labelText: 'Ваш возраст',
+          hintText: "Ваш возраст",
           prefixIcon: const Icon(Icons.date_range),
           suffixIcon: IconButton(
             icon: const Icon(Icons.delete_outline),
@@ -268,29 +241,35 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
 
-    final singUpButton = ElevatedButton(
-      onPressed: _registerUser,
-      child: const Text("Зарегистрироваться"),
+    final updatePasswordButton = ElevatedButton(
+      onPressed: _updatePassword,
+      child: const Text("Востановить"),
     );
+
+    final checkButton = ElevatedButton(
+      onPressed: _check,
+      child: const Text("Проверить"),
+    );
+
+    List<Widget> getListItems() {
+      if (!_found) {
+        return [loginField, ageField, checkButton];
+      } else {
+        return [passwordField, secondPasswordField, updatePasswordButton];
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Введите данные аккаунта"),
+        title: const Text("Востановление пароля"),
       ),
       body: Center(
         child: Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.all(10.0),
-            children: <Widget>[
-              usernameField,
-              loginField,
-              passwordField,
-              secondPasswordField,
-              ageField,
-              singUpButton,
-            ],
+            children: getListItems(),
           ),
         ),
       ),

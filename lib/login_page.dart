@@ -1,3 +1,4 @@
+import 'package:book_scanner/forget_page.dart';
 import 'package:book_scanner/my_reviews_page.dart';
 import 'package:book_scanner/register_page.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,9 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _logined = false;
+  String _login = "";
+  String _username = "";
+  int _age = 0;
   AppDatabase db = AppDatabase();
 
   @override
@@ -38,6 +42,16 @@ class _LoginPageState extends State<LoginPage> {
         _logined = logined;
       }
     });
+    if (_logined) {
+      final age = prefs.getInt(ageKey);
+      final username = prefs.getString(usernameKey);
+      final login = prefs.getString(loginKey);
+      setState(() {
+        _age = age!;
+        _username = username!;
+        _login = login!;
+      });
+    }
   }
 
   Future<void> _loginUser() async {
@@ -61,6 +75,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _goToRegister() async {
     Navigator.of(context).pushNamed(RegisterPage.routeName);
+  }
+
+  Future<void> _goToForgetPassword() async {
+    Navigator.of(context).pushNamed(ForgetPage.routeName);
   }
 
   Future _showDialogAlert() {
@@ -132,6 +150,7 @@ class _LoginPageState extends State<LoginPage> {
     final passwordField = Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
+        obscureText: true,
         controller: passwordController,
         validator: (value) {
           if (value!.isEmpty) {
@@ -180,6 +199,11 @@ class _LoginPageState extends State<LoginPage> {
         child: const Text("Зарегистрироваться")
     );
 
+    final forgetPasswordButton = TextButton(
+        onPressed: _goToForgetPassword,
+        child: const Text("Забыли пароль?")
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -194,7 +218,8 @@ class _LoginPageState extends State<LoginPage> {
               loginField,
               passwordField,
               loginButton,
-              singUpButon
+              singUpButon,
+              forgetPasswordButton
             ],
           ),
         ),
@@ -215,19 +240,22 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushNamed(MyReviewsPage.routeName);
   }
 
-  Widget buildOutForm(context) {
+
+
+  Widget buildOutForm(BuildContext context) {
     final logoutButton = ElevatedButton(
       onPressed: _logout,
-      child: const Text("Выйти"),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red
       ),
+      child: const Text("Выйти"),
     );
 
     final myReviewsButton = ElevatedButton(
       onPressed: _goToMyReviews,
       child: const Text("Мои отзывы"),
     );
+
 
     return Scaffold(
       backgroundColor: Colors.white,

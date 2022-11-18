@@ -1,7 +1,6 @@
 import 'package:postgres/postgres.dart';
 
 class AppDatabase {
-
   PostgreSQLConnection connection = PostgreSQLConnection(
     '195.19.32.74',
     5432,
@@ -12,7 +11,6 @@ class AppDatabase {
 
   AppDatabase();
 
-  // Fetch Data Section
   List<Map<String, Map<String, dynamic>>> fetchBookDataFuture = [];
   Future<List<Map<String, Map<String, dynamic>>>> fetchBookData(int barcode) async {
     if (connection.isClosed) {
@@ -163,6 +161,40 @@ class AppDatabase {
           substitutionValues: {
             'barcode': barcode,
             'how': how
+          }
+      );
+      newReviewFuture = 'reg';
+    } catch (exc) {
+      newReviewFuture = 'exc';
+      exc.toString();
+    }
+    return newReviewFuture;
+  }
+
+  Future<bool> foundUserByLoginAndAge(String login, int age) async {
+    if (connection.isClosed) {
+      await connection.open();
+    }
+    loginUserFuture = await connection.mappedResultsQuery(
+        'SELECT * FROM books_accounts br WHERE login = @login AND age = @age',
+        substitutionValues: {
+          'login': login,
+          'age': age
+        }
+    );
+    return loginUserFuture.isNotEmpty;
+  }
+
+  Future<String> updateUserPassword(String login, String password) async {
+    try {
+      if (connection.isClosed) {
+        await connection.open();
+      }
+      await connection.query(
+          'UPDATE books_accounts SET password = @password WHERE login = @login',
+          substitutionValues: {
+            'login': login,
+            'password': password
           }
       );
       newReviewFuture = 'reg';

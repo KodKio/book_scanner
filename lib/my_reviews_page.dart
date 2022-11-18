@@ -100,6 +100,7 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
   }
 
   Widget _itemBuilder(BuildContext context, int index) {
+    final numLines = '\n'.allMatches(_reviews[index].text).length + 1;
     return GestureDetector(
         onTap: () => _goToReviews(_reviews[index].book.barcode),
         child: Container(
@@ -107,7 +108,7 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
                 color: Colors.lightBlue,
                 borderRadius: BorderRadius.circular(10)
             ),
-            height: 100,
+            height: 100 + (numLines - 2) * 10 + 30,
             child: Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Column(

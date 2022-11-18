@@ -4,10 +4,11 @@ import 'package:book_scanner/login_page.dart';
 import 'package:book_scanner/my_reviews_page.dart';
 import 'package:book_scanner/reviews_page.dart';
 import 'package:book_scanner/add_book_page.dart';
+import 'package:book_scanner/register_page.dart';
+import 'package:book_scanner/forget_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:scan/scan.dart';
-import 'package:book_scanner/register_page.dart';
 
 const String barcodeKey = "BARCODE";
 const String loginKey = "LOGIN";
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
         MyHomePage.routeName : (BuildContext context) => const MyHomePage(),
         RegisterPage.routeName : (BuildContext context) => const RegisterPage(),
         AddReviewPage.routeName : (BuildContext context) => const AddReviewPage(),
-        MyReviewsPage.routeName : (BuildContext context) => const MyReviewsPage()
+        MyReviewsPage.routeName : (BuildContext context) => const MyReviewsPage(),
+        ForgetPage.routeName : (BuildContext context) => const ForgetPage(),
       },
     );
   }

@@ -201,6 +201,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
     if (index == 0) {
       return _buildBookInfoCard(context);
     } else {
+      final numLines = '\n'.allMatches(_reviews[index - 1].text).length + 1;
       return GestureDetector(
         onTap: () => _showReview(_reviews[index - 1].how.name, _reviews[index - 1].text),
         child: Container(
@@ -208,7 +209,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
               color: Colors.lightBlue,
               borderRadius: BorderRadius.circular(10)
           ),
-          height: 100,
+          height: 100 + (numLines - 2) * 10 + 30,
           child: Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Column(
