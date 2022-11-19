@@ -19,6 +19,7 @@ class MyReview {
   final MyBook book;
   final MyUser how;
   final String text;
+  final int rate;
 
-  MyReview(this.book, this.how, this.text);
+  MyReview(this.book, this.how, this.text, this.rate);
 }

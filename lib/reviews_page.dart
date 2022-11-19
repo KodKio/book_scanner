@@ -19,6 +19,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
   int _barcode = 0;
   MyBook _book = MyBook(0, "", "", 0);
+  double _avgRate = 0;
   bool _logined = false;
   List<MyReview> _reviews = [];
   AppDatabase db = AppDatabase();
@@ -87,6 +88,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
     List<Map<String, Map<String, dynamic>>> data = await db.fetchReviewsData(
         _barcode);
     List<MyReview> reviews = [];
+    int sum = 0;
     for (var elem in data) {
       reviews.add(MyReview(
           _book,
@@ -95,12 +97,15 @@ class _ReviewsPageState extends State<ReviewsPage> {
               elem["books_accounts"]!["name"],
               0
           ),
-          elem["books_reviews"]!["review"]
+          elem["books_reviews"]!["review"],
+          elem["books_reviews"]!["rate"]
       )
       );
+      sum += reviews.last.rate;
     }
     setState(() {
       _reviews = reviews;
+      _avgRate = sum / reviews.length;
     });
   }
 
@@ -119,13 +124,29 @@ class _ReviewsPageState extends State<ReviewsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      Text(
-                          _book.name,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                              _book.name,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.left
                           ),
-                          textAlign: TextAlign.left
+                          Padding(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Text(
+                              _avgRate.toStringAsFixed(2) + "/5",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold
+                                ),
+                                textAlign: TextAlign.right
+                            )
+                          )
+                        ]
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -183,6 +204,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
         Center(
             child: (_reviews.length >= 0) ?
             ListView.separated(
+              scrollDirection: Axis.vertical,
               itemBuilder: _itemBuilder,
               separatorBuilder: _separatorBuilder,
               itemCount: _reviews.length + 1,
@@ -201,6 +223,55 @@ class _ReviewsPageState extends State<ReviewsPage> {
     if (index == 0) {
       return _buildBookInfoCard(context);
     } else {
+
+
+
+      final firstStar = (_reviews[index - 1].rate >= 1) ? const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ) :
+      const Icon(
+        Icons.star_border,
+        color: Colors.amber,
+      );
+
+      final secondStar = (_reviews[index - 1].rate >= 2) ? const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ) :
+      const Icon(
+        Icons.star_border,
+        color: Colors.amber,
+      );
+
+      final thirdStar = (_reviews[index - 1].rate >= 3) ? const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ) :
+      const Icon(
+        Icons.star_border,
+        color: Colors.amber,
+      );
+
+      final fourthStar = (_reviews[index - 1].rate >= 4) ? const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ) :
+      const Icon(
+        Icons.star_border,
+        color: Colors.amber,
+      );
+
+      final fifthStar = (_reviews[index - 1].rate >= 5) ? const Icon(
+        Icons.star,
+        color: Colors.amber,
+      ) :
+      const Icon(
+        Icons.star_border,
+        color: Colors.amber,
+      );
+
+
       final numLines = '\n'.allMatches(_reviews[index - 1].text).length + 1;
       return GestureDetector(
         onTap: () => _showReview(_reviews[index - 1].how.name, _reviews[index - 1].text),
@@ -216,13 +287,37 @@ class _ReviewsPageState extends State<ReviewsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  Text(
-                    _reviews[index - 1].how.name,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold
-                    ),
-                    textAlign: TextAlign.left
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "${_reviews[index - 1].how.name}",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold
+                        ),
+                        textAlign: TextAlign.left
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Row(
+                            children: [
+                              firstStar,
+                              const SizedBox(width: 5),
+                              secondStar,
+                              const SizedBox(width: 5),
+                              thirdStar,
+                              const SizedBox(width: 5),
+                              fourthStar,
+                              const SizedBox(width: 5),
+                              fifthStar
+                            ],
+                          )
+                        )
+                      )
+                    ]
                   ),
                   const SizedBox(height: 10),
                   Flexible(

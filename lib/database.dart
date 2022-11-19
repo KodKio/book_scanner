@@ -29,7 +29,7 @@ class AppDatabase {
       await connection.open();
     }
     fetchReviewsDataFuture = await connection.mappedResultsQuery(
-        'SELECT bi.name, ba.login, ba.name, br.review FROM books_reviews br JOIN books_accounts ba ON ba.login = br.how JOIN books_info bi ON bi.barcode = br.book WHERE br.book = @book',
+        'SELECT bi.name, ba.login, ba.name, br.review, br.rate FROM books_reviews br JOIN books_accounts ba ON ba.login = br.how JOIN books_info bi ON bi.barcode = br.book WHERE br.book = @book',
         substitutionValues: {'book': book}
     );
     return fetchReviewsDataFuture;
@@ -108,17 +108,18 @@ class AppDatabase {
 
   String newReviewFuture = '';
   Future<String> createReview(
-      int barcode, String how, String text) async {
+      int barcode, String how, String text, int rate) async {
     try {
       if (connection.isClosed) {
         await connection.open();
       }
       await connection.query(
-          'INSERT INTO books_reviews VALUES (@barcode, @how, @text)',
+          'INSERT INTO books_reviews VALUES (@barcode, @how, @text, @rate)',
           substitutionValues: {
             'barcode': barcode,
             'how': how,
-            'text': text
+            'text': text,
+            'rate': rate
           }
       );
       newReviewFuture = 'reg';
@@ -130,17 +131,18 @@ class AppDatabase {
   }
 
   Future<String> updateReview(
-      int barcode, String how, String text) async {
+      int barcode, String how, String text, int rate) async {
     try {
       if (connection.isClosed) {
         await connection.open();
       }
       await connection.query(
-          'UPDATE books_reviews SET review = @text WHERE book = @barcode AND how = @how',
+          'UPDATE books_reviews SET review = @text, rate = @rate WHERE book = @barcode AND how = @how',
           substitutionValues: {
             'barcode': barcode,
             'how': how,
-            'text': text
+            'text': text,
+            'rate': rate
           }
       );
       newReviewFuture = 'reg';

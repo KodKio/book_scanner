@@ -2,7 +2,6 @@ import 'package:book_scanner/database.dart';
 import 'package:book_scanner/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:book_scanner/structures.dart';
 
 class AddReviewPage extends StatefulWidget {
   const AddReviewPage({super.key});
@@ -19,6 +18,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
   int _barcode = 0;
   String _login = "";
   String _myReview = "";
+  int _rate = 0;
 
   @override
   void setState(VoidCallback fn) {
@@ -50,13 +50,16 @@ class _AddReviewPageState extends State<AddReviewPage> {
     List<Map<String, Map<String, dynamic>>> data = await db.fetchReviewsData(
         _barcode);
     String review = "";
+    int rate = 0;
     for (var elem in data) {
       if (elem["books_accounts"]!["login"] == _login) {
         review = elem["books_reviews"]!["review"];
+        rate = elem["books_reviews"]!["rate"];
       };
     }
     setState(() {
       _myReview = review;
+      _rate = rate;
     });
   }
 
@@ -66,7 +69,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
       Navigator.of(context).pop();
       return;
     }
-    String review = await db.createReview(_barcode, _login, text);
+    String review = await db.createReview(_barcode, _login, text, _rate);
     if (review == "reg") {
       await _showDialogAlert("Комментарий создан");
       Navigator.of(context).pop();
@@ -78,7 +81,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
   Future<void> _updateReview() async {
     String text = commentController.text;
     if (text != "") {
-      String review = await db.updateReview(_barcode, _login, text);
+      String review = await db.updateReview(_barcode, _login, text, _rate);
       if (review == "reg") {
         await _showDialogAlert("Комментарий обновлен");
         Navigator.of(context).pop();
@@ -98,6 +101,32 @@ class _AddReviewPageState extends State<AddReviewPage> {
     } else {
       await _showDialogAlert("Что-то пошло не так:(");
     }
+  }
+
+  Future<void> _updateStarsCount(int index) async {
+    setState(() {
+      _myReview = commentController.text;
+      _rate = index;
+    });
+  }
+
+  Widget _starsBuilder(BuildContext context, int index) {
+    return IconButton(
+        onPressed: () => _updateStarsCount(index + 1),
+        icon: (index < _rate) ?
+          const Icon(
+            Icons.star,
+            color: Colors.amber,
+          ) :
+          const Icon(
+            Icons.star_border,
+            color: Colors.amber,
+          )
+    );
+  }
+
+  Widget _starsSeparator(BuildContext context, int index) {
+    return const SizedBox(width: 12);
   }
 
   @override
@@ -132,6 +161,50 @@ class _AddReviewPageState extends State<AddReviewPage> {
       ),
     );
 
+    final starsField = Container(
+      height: 90,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Column(
+            children: [
+              const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Оценка:",
+                    style: TextStyle(
+                        color: Colors.black,
+                    ),
+                  )
+              ),
+              const SizedBox(height: 5),
+              Container(
+                height: 55,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.black, width: 2.0)
+                ),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: _starsBuilder,
+                    separatorBuilder: _starsSeparator,
+                    itemCount: 5
+                  ),
+                )
+              )
+            ]
+          )
+        )
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -141,6 +214,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
           child: ListView(
             padding: const EdgeInsets.all(10.0),
             children: <Widget>[
+              starsField,
               commentField,
               ElevatedButton(
                 onPressed: (_myReview == "") ? _createReview : _updateReview,
