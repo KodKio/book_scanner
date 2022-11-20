@@ -18,6 +18,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
   int _barcode = 0;
   String _login = "";
   String _myReview = "";
+  String _tmpReview = "";
   int _rate = 0;
 
   @override
@@ -59,6 +60,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
     }
     setState(() {
       _myReview = review;
+      _tmpReview = review;
       _rate = rate;
     });
   }
@@ -105,7 +107,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
   Future<void> _updateStarsCount(int index) async {
     setState(() {
-      _myReview = commentController.text;
+      _tmpReview = commentController.text;
       _rate = index;
     });
   }
@@ -132,7 +134,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
   @override
   Widget build(BuildContext context) {
 
-    commentController.text = _myReview;
+    commentController.text = _tmpReview;
 
     final commentField = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0.5),
