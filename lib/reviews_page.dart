@@ -138,7 +138,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                           Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Text(
-                              _avgRate.toStringAsFixed(2) + "/5",
+                                "${(_reviews.isNotEmpty) ? _avgRate.toStringAsFixed(2) : "0"}/5",
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold
@@ -202,15 +202,14 @@ class _ReviewsPageState extends State<ReviewsPage> {
         ),
         body:
         Center(
-            child: (_reviews.length >= 0) ?
+            child: _reviews.isNotEmpty ?
             ListView.separated(
               scrollDirection: Axis.vertical,
               itemBuilder: _itemBuilder,
               separatorBuilder: _separatorBuilder,
               itemCount: _reviews.length + 1,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            ) :
-            const Text("Нет отзывов")
+            ) : _buildNoRewiews(context)
         ),
         floatingActionButton: (_logined) ? FloatingActionButton(
           onPressed: _goToEditing,
@@ -219,13 +218,21 @@ class _ReviewsPageState extends State<ReviewsPage> {
     );
   }
 
+  Widget _buildNoRewiews(BuildContext context) {
+    return ListView(
+      children: [
+        _buildBookInfoCard(context),
+        const Center(
+          child: Text("Нет отзывов"),
+        )
+      ],
+    );
+  }
+
   Widget _itemBuilder(BuildContext context, int index) {
     if (index == 0) {
       return _buildBookInfoCard(context);
     } else {
-
-
-
       final firstStar = (_reviews[index - 1].rate >= 1) ? const Icon(
         Icons.star,
         color: Colors.amber,

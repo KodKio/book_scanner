@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         AddReviewPage.routeName : (BuildContext context) => const AddReviewPage(),
         MyReviewsPage.routeName : (BuildContext context) => const MyReviewsPage(),
         ForgetPage.routeName : (BuildContext context) => const ForgetPage(),
-        EditProfilePage.routeName : (BuildContext context) => const EditProfilePage()
+        EditProfilePage.routeName : (BuildContext context) => const EditProfilePage(),
       },
     );
   }
@@ -104,7 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _goToReviews() async {
-    if (_textController.text.length != 13) {
+    if (_textController.text.length != 13 ||
+        !(_textController.text.startsWith("978") ||
+        _textController.text.startsWith("979"))) {
       _showBadDialogAlert();
       return;
     }
@@ -116,7 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setInt(barcodeKey, int.parse(_textController.text));
       } else {
-        _showDialogAlert();
+        if (_logined) {
+          _showAddBookAlert();
+        } else {
+          _showDialogAlert();
+        }
       }
     }
   }
@@ -126,11 +132,11 @@ class _MyHomePageState extends State<MyHomePage> {
     await _initLogin();
   }
 
-  Future<void> _goToAdd() async {
+  Future<void> _goToAddBook() async {
     Navigator.of(context).pop();
-    Navigator.of(context).pushNamed(AddBookPage.routeName);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt(barcodeKey, int.parse(_textController.text));
+    Navigator.of(context).pushNamed(AddBookPage.routeName);
   }
 
   Future _showScanner() {
@@ -226,13 +232,11 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Row(
             children: <Widget>[
               IconButton(
-                tooltip: 'Open navigation menu',
                 icon: const Icon(Icons.add_a_photo),
                 onPressed: _showScanner,
               ),
               const Spacer(),
               IconButton(
-                tooltip: 'Favorite',
                 icon: const Icon(Icons.account_circle),
                 onPressed: _goToLogin,
               ),
@@ -242,7 +246,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _goToReviews,
-        tooltip: 'Go to Friends',
         child: const Icon(Icons.check),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
@@ -273,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  Future _showDialogAlert() {
+  Future _showAddBookAlert() {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -292,11 +295,28 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text("Нет")
               ),
               ElevatedButton(
-                  onPressed: _goToAdd,
+                  onPressed: _goToAddBook,
                   child: const Text("Да")
               ),
             ],
             content: Text("Хотите добавить?"),
+          );
+        });
+  }
+
+  Future _showDialogAlert() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text("У нас такой книги нет:("),
+            titleTextStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 20
+            ),
+            actionsOverflowButtonSpacing: 20,
+            content: Text("Войдите, чтобы добавить"),
           );
         });
   }

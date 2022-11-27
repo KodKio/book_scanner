@@ -77,25 +77,25 @@ class _MyReviewsPageState extends State<MyReviewsPage> {
         ),
         body:
         Center(
-            child: (_reviews.length >= 0) ?
+            child: _reviews.isNotEmpty ?
             ListView.separated(
               itemBuilder: _itemBuilder,
               separatorBuilder: _separatorBuilder,
               itemCount: _reviews.length,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             ) :
-            const Text("У вас нет отзывов отзывов")
+            const Text("У вас нет отзывов")
         )
     );
   }
 
   Future<void> _goToReviews(int barcode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final last_barcode = prefs.getInt(barcodeKey);
+    final lastBarcode = prefs.getInt(barcodeKey);
     prefs.setInt(barcodeKey, barcode);
     await Navigator.of(context).pushNamed(ReviewsPage.routeName);
-    if (last_barcode != null) {
-      prefs.setInt(barcodeKey, last_barcode);
+    if (lastBarcode != null) {
+      prefs.setInt(barcodeKey, lastBarcode);
     }
     await _initReviews();
   }

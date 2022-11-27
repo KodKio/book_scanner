@@ -152,6 +152,19 @@ class _RegisterPageState extends State<RegisterPage> {
           if (value!.isEmpty) {
             return 'Введите пароль';
           }
+          String result = "";
+          if (value.length < 8) {
+            result += 'Минимум 8 символов\n';
+          }
+          if (value.toLowerCase() == value) {
+            result += 'Нужна минимум 1 заглавная буква\n';
+          }
+          if (!value.contains(RegExp(r'[0-9]+'))) {
+            result += 'Нужна минимум 1 цифра\n';
+          }
+          if (result != "") {
+            return result;
+          }
           return null;
         },
         decoration: InputDecoration(
