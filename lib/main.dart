@@ -1,3 +1,4 @@
+import 'package:book_scanner/about_page.dart';
 import 'package:book_scanner/add_review_page.dart';
 import 'package:book_scanner/database.dart';
 import 'package:book_scanner/edit_profile_page.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         MyReviewsPage.routeName : (BuildContext context) => const MyReviewsPage(),
         ForgetPage.routeName : (BuildContext context) => const ForgetPage(),
         EditProfilePage.routeName : (BuildContext context) => const EditProfilePage(),
+        AboutPage.routeName : (BuildContext context) => const AboutPage()
       },
     );
   }
@@ -206,6 +208,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
+        actions: [
+          Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: IconButton(
+                icon: Icon(Icons.info_outline),
+                color: Colors.white,
+                onPressed: () => {
+                  Navigator.of(context).pushNamed(AboutPage.routeName)
+                },
+              )
+          )
+        ],
       ),
       body: Center(
         child: Column(

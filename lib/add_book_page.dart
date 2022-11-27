@@ -175,7 +175,7 @@ class _AddBookPageState extends State<AddBookPage> {
 
     final submitButton = ElevatedButton(
       onPressed: _makeBook,
-      child: const Text("Submit"),
+      child: const Text("Подтвердить"),
     );
 
     return Scaffold(
