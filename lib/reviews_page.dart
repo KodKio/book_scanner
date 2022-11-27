@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:book_scanner/add_review_page.dart';
 import 'package:book_scanner/structures.dart';
 import 'package:book_scanner/main.dart';
@@ -23,6 +25,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
   bool _logined = false;
   List<MyReview> _reviews = [];
   AppDatabase db = AppDatabase();
+  bool _FromGoodToBad = true;
+  Widget iconInAppBar = Icon(Icons.sort);
 
 
   @override
@@ -103,6 +107,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
       );
       sum += reviews.last.rate;
     }
+
+    reviews.sort((a, b) => a.rate.compareTo(b.rate));
+    if (_FromGoodToBad) {
+      reviews = reviews.reversed.toList();
+    }
+
     setState(() {
       _reviews = reviews;
       _avgRate = sum / reviews.length;
@@ -194,11 +204,32 @@ class _ReviewsPageState extends State<ReviewsPage> {
     );
   }
 
+  void _changeOrder() {
+    setState(() {
+      _FromGoodToBad = !_FromGoodToBad;
+      iconInAppBar = Transform.rotate(
+        angle: (!_FromGoodToBad) ? (180 * pi / 180) : 0,
+        child: const Icon(Icons.sort),
+      );
+    });
+    _initReviews();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text("Отзывы"),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: IconButton(
+                    icon: iconInAppBar,
+                    color: Colors.white,
+                    onPressed: _changeOrder,
+                  )
+              )
+          ],
         ),
         body:
         Center(
