@@ -9,15 +9,13 @@ class AppDatabase {
     password: 'bmstu',
   );
 
-  AppDatabase() {
-    _createTables();
-  }
+  AppDatabase() {}
 
   Future<void> _createTables() async {
     if (connection.isClosed) {
       await connection.open();
     }
-    PostgreSQLResult result = await connection.query(
+    await connection.query(
         '''CREATE TABLE IF NOT EXISTS public.books_accounts
         (name text not null,
          login text constraint books_accounts_pk primary key,
@@ -25,7 +23,7 @@ class AppDatabase {
          age integer default 0
         )'''
     );
-    result = await connection.query(
+    await connection.query(
         '''CREATE TABLE IF NOT EXISTS public.books_info 
         (barcode bigint constraint books_info_pk primary key,
          name text not null,
@@ -33,7 +31,7 @@ class AppDatabase {
          age_limit integer default 0
         )'''
     );
-    result = await connection.query(
+    await connection.query(
         '''CREATE TABLE IF NOT EXISTS public.books_reviews 
         (book bigint constraint books_reviews_books_info_barcode_fk references public.books_info,
          how text constraint books_reviews_books_accounts_login_fk references public.books_accounts,
@@ -49,6 +47,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     fetchBookDataFuture = await connection.mappedResultsQuery(
         'SELECT bi.name, bi.author, bi.age_limit FROM books_info bi WHERE barcode = @barcode',
         substitutionValues: {'barcode': barcode}
@@ -61,6 +60,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     fetchReviewsDataFuture = await connection.mappedResultsQuery(
         'SELECT bi.name, ba.login, ba.name, br.review, br.rate FROM books_reviews br JOIN books_accounts ba ON ba.login = br.how JOIN books_info bi ON bi.barcode = br.book WHERE br.book = @book',
         substitutionValues: {'book': book}
@@ -73,6 +73,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     fetchUserReviewsDataFuture = await connection.mappedResultsQuery(
         'SELECT bi.name, bi.author, bi.age_limit, br.review, bi.barcode FROM books_reviews br JOIN books_info bi ON bi.barcode = br.book WHERE br.how = @login',
         substitutionValues: {'login': login}
@@ -86,6 +87,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     PostgreSQLResult result = await connection.query(
         'INSERT INTO books_info VALUES (@barcode, @name, @author, @age_limit)',
         substitutionValues: {
@@ -105,6 +107,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     loginUserFuture = await connection.mappedResultsQuery(
         'SELECT * FROM books_accounts br WHERE login = @login AND password = @password',
         substitutionValues: {
@@ -119,9 +122,10 @@ class AppDatabase {
   Future<String> registerUser(
       String username, String login, String password, int age) async {
     try {
-    if (connection.isClosed) {
-      await connection.open();
-    }
+      if (connection.isClosed) {
+        await connection.open();
+      }
+      await _createTables();
       await connection.query(
           'INSERT INTO books_accounts VALUES (@username, @login, @password, @age)',
           substitutionValues: {
@@ -131,12 +135,12 @@ class AppDatabase {
             'age': age,
           }
       );
-      newBookFuture = 'reg';
+      newUserFuture = 'reg';
     } catch (exc) {
-      newBookFuture = 'exc';
+      newUserFuture = 'exc';
       exc.toString();
     }
-    return newBookFuture;
+    return newUserFuture;
   }
 
   String newReviewFuture = '';
@@ -146,6 +150,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'INSERT INTO books_reviews VALUES (@barcode, @how, @text, @rate)',
           substitutionValues: {
@@ -169,6 +174,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'UPDATE books_reviews SET review = @text, rate = @rate WHERE book = @barcode AND how = @how',
           substitutionValues: {
@@ -191,6 +197,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'DELETE FROM books_reviews WHERE book = @barcode AND how = @how',
           substitutionValues: {
@@ -210,6 +217,7 @@ class AppDatabase {
     if (connection.isClosed) {
       await connection.open();
     }
+    await _createTables();
     loginUserFuture = await connection.mappedResultsQuery(
         'SELECT * FROM books_accounts br WHERE login = @login AND age = @age',
         substitutionValues: {
@@ -225,6 +233,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'UPDATE books_accounts SET password = @password WHERE login = @login',
           substitutionValues: {
@@ -245,6 +254,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'UPDATE books_accounts SET password = @password, age = @age, name = @username WHERE login = @login',
           substitutionValues: {
@@ -267,6 +277,7 @@ class AppDatabase {
       if (connection.isClosed) {
         await connection.open();
       }
+      await _createTables();
       await connection.query(
           'DELETE FROM books_accounts WHERE login = @login',
           substitutionValues: {
