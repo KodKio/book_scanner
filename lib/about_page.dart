@@ -20,7 +20,7 @@ class _AboutPageState extends State<AboutPage> {
       body: const Center(
         child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Text('Выполнено в рамках курса "Базы данных" студентами МГТУ им. Н.Э. Баумана Степановым Николаем и Алымовой Анастасией')),
+            child: Text('Выполнено в рамках курса "Базы данных" студентами МГТУ им. Н.Э. Баумана Степановым Николаем и Алымовой Анастасией,\n преподаватель: Гумиргалиев Тимур Рашидович\n ссылка на проект: https://github.com/KodKio/book_scanner')),
       ),
     );
   }
