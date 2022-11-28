@@ -9,7 +9,40 @@ class AppDatabase {
     password: 'bmstu',
   );
 
-  AppDatabase();
+  AppDatabase() {
+    _createTables();
+  }
+
+  Future<void> _createTables() async {
+    if (connection.isClosed) {
+      await connection.open();
+    }
+    PostgreSQLResult result = await connection.query(
+        '''CREATE TABLE IF NOT EXISTS public.books_accounts
+        (name text not null,
+         login text constraint books_accounts_pk primary key,
+         password text not null,
+         age integer default 0
+        )'''
+    );
+    result = await connection.query(
+        '''CREATE TABLE IF NOT EXISTS public.books_info 
+        (barcode bigint constraint books_info_pk primary key,
+         name text not null,
+         author text,
+         age_limit integer default 0
+        )'''
+    );
+    result = await connection.query(
+        '''CREATE TABLE IF NOT EXISTS public.books_reviews 
+        (book bigint constraint books_reviews_books_info_barcode_fk references public.books_info,
+         how text constraint books_reviews_books_accounts_login_fk references public.books_accounts,
+         review text,
+         rate integer,
+         constraint books_reviews_pk primary key (how, book)
+        )'''
+    );
+  }
 
   List<Map<String, Map<String, dynamic>>> fetchBookDataFuture = [];
   Future<List<Map<String, Map<String, dynamic>>>> fetchBookData(int barcode) async {
