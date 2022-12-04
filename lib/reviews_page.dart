@@ -147,15 +147,24 @@ class _ReviewsPageState extends State<ReviewsPage> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(right: 20),
-                            child: Text(
-                                "${(_reviews.isNotEmpty) ? _avgRate.toStringAsFixed(2) : "0"}/5",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold
-                                ),
-                                textAlign: TextAlign.right
+                            child:
+                              Row (
+                                children: [
+                                  Text(
+                                    "${(_reviews.isNotEmpty) ? _avgRate.toStringAsFixed(2) : "0"}/5",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                    textAlign: TextAlign.right
+                                  ),
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  )
+                                ]
+                              )
                             )
-                          )
                         ]
                       ),
                       const SizedBox(height: 10),
@@ -198,7 +207,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
                 child: const Text("Понятно")
             )
           ],
-          content: Text(text),
+          content: Container(
+              height: 200,
+              child: SingleChildScrollView(
+                child: Text(text)
+              ),
+          )
         );
       }
     );
@@ -264,6 +278,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
     if (index == 0) {
       return _buildBookInfoCard(context);
     } else {
+      String reviewText = _reviews[index - 1].text;
+
+      if (reviewText.length > 100) {
+        reviewText = "${reviewText.substring(0, 100)}...";
+      }
+
       final firstStar = (_reviews[index - 1].rate >= 1) ? const Icon(
         Icons.star,
         color: Colors.amber,
@@ -360,7 +380,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
                   const SizedBox(height: 10),
                   Flexible(
                     child: Text(
-                      _reviews[index - 1].text,
+                      reviewText,
                       maxLines: null,
                       style: const TextStyle(color: Colors.white)
                     ),
